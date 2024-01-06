@@ -1,23 +1,63 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useCallback } from "react";
+import ReactFlow, {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
+  Controls,
+  Background,
+  Panel,
+} from "reactflow";
+import "reactflow/dist/style.css";
+
+const initialNodes = [
+  {
+    id: "1",
+    type: "input",
+    data: { label: "Input Node" },
+    position: { x: 250, y: 25 },
+  },
+
+  {
+    id: "2",
+    // you can also pass a React component as a label
+    data: { label: <div>Default Node</div> },
+    position: { x: 100, y: 125 },
+  },
+  {
+    id: "3",
+    type: "output",
+    data: { label: "Output Node" },
+    position: { x: 250, y: 250 },
+  },
+];
+const initialEdges = [
+  { id: "e1-2", source: "1", target: "2" },
+  { id: "e2-3", source: "2", target: "3" },
+];
 
 function App() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const onConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ width: "100vw", height: "100vh", background: "purple" }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+      >
+        <Controls />
+        <MiniMap />
+
+        <Background variant="dots" gap={30} size={2} />
+      </ReactFlow>
     </div>
   );
 }
